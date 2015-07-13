@@ -1,1 +1,315 @@
-<h1>Test</h1>
+
+<!DOCTYPE html>
+<html lang='en'>
+	<head>
+		<meta charset='utf-8'>
+		<meta content='Igor (t1gor) Timoshenkov personal page' name='description'>
+		<title>Igor (t1gor) Timoshenkov</title>
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.6/styles/monokai_sublime.min.css">
+		<script src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
+		<script src="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.6/highlight.min.js"></script>
+		<script type="text/javascript">
+			$( document ).ready( function() {
+				$( "pre code" ).each( function( i, block ) {
+					console.log( i, block );
+					hljs.highlightBlock( block );
+				});
+			});
+		</script>
+	</head>
+	<body style="padding: 0; margin: 0;">
+<pre style="margin: 0;"><code class="php">&lt;?php
+/**
+ * Hi!
+ * 
+ * If you're viewing this - I am probably looking for a new job. Please use the code below as a description of what I can do and what I would like to do.
+ * 
+ * In case of any questions - please do not hesitate to contact me using the data below:
+ *
+ * @author   Igor (t1gor) Timoshenkov
+ *
+ * @email    igor.timoshenkov@gmail.com
+ * @skype    igor_timoshenkov
+ *
+ * @Github        https://github.com/t1gor
+ * @Linkedin      https://linkedin.com/in/t1gor
+ * @StackOverflow http://stackoverflow.com/users/1847769/t1gor
+ */
+namespace \Employee;
+
+use \Web\Developer;
+use \Web\Application;
+use \Team;
+use \Team\Lead as TeamLead;
+use \Team\Work\Prototype;
+use \Team\Work\Flow;
+use \Web\Developer\Task;
+use \Web\Developer\FullStack as FullStackWebDeveloper;
+use \Web\Developer\Exceptions\NoWorkAvailable;
+use \Web\Developer\Task\AutomatableInterface;
+use \Business\Backlog;
+
+/**
+ * Me.
+ */
+final class IgorTimoshenkov extends SoftwareEngineer implements FullStackWebDeveloper, TeamLead
+{
+	/**
+	 * @var array
+	 */
+	protected static $tools = [
+		'IDE' => 'PhpStorm',
+		'OS' => 'Linux (Ubuntu)',
+		'misc' => 'Terminator (Console client)',
+		'frameworks' => [
+			null,           // none is also an option
+			'CodeIgniter',
+			'Synfony',
+			'self-written'
+		],
+		'cms' => [
+			null,           // none is also an option
+			'Drupal',
+			'Wordpress',
+			'Joomla',
+			'Magento'
+		],
+		'ui' => [
+			null,           // none is also an option
+			'jquery',
+			'Twitter Bootstrap',
+			'Backbone (Exoskeleton)',
+		],
+		'db' => [
+			null,           // none is also an option
+			'mysql',
+			'pgsql'
+		],
+		'utils' => [
+			null,           // none is also an option
+			'Sphinx search',
+			'Memcached',
+			'Redis',
+			'Gearman',
+			'RabbitMQ'
+		],
+		'test' => [
+			'phpUnit',
+			'travis-ci',
+		],
+		'review' => [
+			'https://bitbucket.org',
+			'https://github.com'
+		]
+	];
+
+	/**
+	 * As a normal human being, I need a team for a "better performance".
+	 * 
+	 * A set of \Web\Developer guys.
+	 * @var \Team
+	 */
+	public $team = new Team();
+
+	/**
+	 * Nothing can be shown on this step, unfortunately.
+	 * But no development can be done before some research.
+	 *
+	 * @return $this
+	 */
+	public function research()
+	{
+		$workDescription = $this->workInProgress->getDescription();
+		$sources = array(
+			'http://stackoverflow.com/search?q='.$workDescription,
+			'https://github.com/search?q='.$workDescription,
+			'https://packagist.org/search/?q='.$workDescription,
+		);
+		return $this->keepInMind($sources);
+	}
+
+	/**
+	 * Play around with tools and requirements to get the best performance 
+	 * and user experience.
+	 *
+	 * @return \Team\Work\Prototype
+	 */
+	public function prototype()
+	{
+		$tools = static::$tools;
+		$parts = $this->workInProgress->breakDown();
+
+		// is there something we can do?
+		if (empty($parts)) {
+			throw new NoWorkAvailable();
+		}
+
+		// make something you can show to customer
+		$proto = new Prototype();
+
+		// iterate
+		array_walk($parts, function($part) use ($tools, $proto) {
+			$proto->combine($part, $tools);
+		});
+
+		// return something viewable
+		return $proto;
+	}
+
+	/**
+	 * Almost like prototype :) but no funny business here!
+	 * 
+	 * @return \Web\Application
+	 */
+	public function implement()
+	{
+		// combine tools with requirements
+		$tools = static::$tools;
+		$parts = $this->workInProgress->breakDown();
+
+		// is there something we can do?
+		if (empty($parts)) {
+			throw new NoWorkAvailable();
+		}
+
+		// start an application
+		$app = new Application();
+
+		// iterate
+		array_walk($parts, function($part) use ($tools, $app) {
+			$app->attach($part);
+		});
+
+		// return something functional
+		return $app;
+	}
+
+	/**
+	 * The more eyes you can get on your code - the better it will get!
+	 * 
+	 * @param \Web\Developer\Task $task
+	 * @return \Team\Metrics\CodeQuality
+	 */
+	public function review(Task $task)
+	{
+		$code = $task->getCode();
+
+		// is task ready?
+		if ($task->getStatus() !== Task::STATUS_DONE) {
+			throw new DomainException('Task not done yet.');
+		}
+
+		// check code quality
+		while (!$code->getQuality()->isOptimal()) {
+			$task->returnToDeveloper(Task::STATUS_RE_WORK);
+		}
+
+		// and return only if optimal
+		return $code->getQuality();
+	}
+
+	/**
+	 * Optimization should be a part of your architecture design, but 
+	 * as ot happends - it's usually not. Let's introdue it now.
+	 * 
+	 * @param \Team\Work\Flow $flow
+	 * @return \Team\Work\Convenience
+	 */
+	public function optimize(Flow $flow)
+	{
+		$steps = $flow->getStepsToProduction();
+
+		// constantly refining workflows
+		foreach ($steps as $idx => $action)
+		{
+			// can we avoid doing this?
+			if ($action->isUnnecessary()) {
+				$flow->remove($idx);
+			}
+
+			// can we gain some performance/convenience?
+			if (!$action->bestToolsUsed()) {
+				$this->research();
+			}
+
+			// can we automate this?
+			if ($action instanceof AutomatableInterface) {
+				$this->automate($flow);
+			}
+		}
+
+		// everybody happy
+		return $flow->getConvenience();
+	}
+
+	/**
+	 * Automation is my passion. Everything that can be automated -
+	 * should be automated.
+	 * 
+	 * @param \Team\Work\Flow $flow
+	 * @return \Team\Metrics\DevelopmentSpeed
+	 */
+	public function automate(Flow $flow)
+	{
+		$availableSteps = [
+			'Linters',			// php -l &lt;file.php&gt;
+			'UnitTests',			// phpUnit
+			'InegrationTests',		// phpUnit + Selenium + etc.
+			'AcceptanceTests',		// headless js tests and/or Selenium
+			'CoverageChecks',		// phpUnit + coverage report + svc hooks
+			'BehaviousTests',		// Behat
+			'PenetrationTests',		// OWASP ZAP
+			'ContiniousIntegration',	// Jenkins / Travis CI / phpCI / etc.
+			'ContiniousDeployment',		// Jenkins / Travis CI / phpCI / etc.
+			'ContiniousDelivery'		// Jenkins / Travis CI / phpCI / etc.
+		];
+
+		// can the team handle current flow?
+		foreach ($availableSteps as $practice) 
+		{
+			// is the team ready to handle the new flow?
+			if ($this->team->canHandle($flow)) {
+				// ok - adding to flow
+				$flow->adoptPractice($practice);
+			}
+			else {
+				// provide training for a team if needed
+				$this->team->train();
+			}
+		}
+
+		// return increased development speed
+		return $this->team->getDevSpeed();
+	}
+
+	/**
+	 * Convert a backlog of requirements to a functional web application
+	 * and get a reasurable profit.
+	 * 
+	 * @param \Business\Backlog $tasks
+	 * @return \Business\Profit
+	 */
+	public function produce(Backlog $tasks)
+	{
+		// sort by client priorities
+		$tasks->sortByWeight();
+
+		// perform work
+		while (!$tasks->resolved())
+		{
+			// loop tasks
+			foreach ($tasks as $task) {
+				// get a free developer
+				$developer = $this->team->getAvailable()->getOne();
+				// assign a task
+				$task->assign($developer);
+			}
+		}
+
+		// all done!
+		return $this->implement()->run()->getProfit();
+	}
+}
+</code></pre>
+	</body>
+</html>
