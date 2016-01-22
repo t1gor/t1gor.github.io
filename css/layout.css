@@ -100,6 +100,9 @@
 	margin-bottom: 1rem;
 	box-sizing: border-box;
 }
+.message.info .flag {
+	margin-right: 0.5rem;
+}
 .message.info {
 	color: #8D99AE;
 	border: solid #8D99AE 1px;
@@ -108,7 +111,9 @@
 .flag {
 	width: 16px;
 	height: 11px;
-	background:url(/img/flags.png) no-repeat
+	display: inline-block;
+	vertical-align: middle;
+	background:url(http://t1gor.github.io/img/flags.png) no-repeat
 }
 
 .flag.flag-ad {background-position: -16px 0}
